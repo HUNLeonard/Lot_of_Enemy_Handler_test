@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3 uid="uid://oucfntbsxxql"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k3cll"]
+bg_color = Color(0.223529, 0.223529, 0.223529, 1)
+corner_radius_bottom_left = 10
+
+[sub_resource type="LabelSettings" id="LabelSettings_t740r"]
+font_size = 32
+font_color = Color(0, 0, 0, 1)
+outline_size = 4
+
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -207.0
+offset_bottom = 123.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_k3cll")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.0
+offset_top = -16.5
+offset_right = 37.0
+offset_bottom = 16.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/MarginContainer"]
+layout_mode = 2
+text = "2000 FPS
+50 Enemy"
+label_settings = SubResource("LabelSettings_t740r")

@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://b4nhx45kkev0f"]
+
+[ext_resource type="Script" path="res://Ground_Melee_Basic.gd" id="1_utqee"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_q80tl"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nvj36"]
+albedo_color = Color(0.403922, 0.403922, 0.403922, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gy64i"]
+material = SubResource("StandardMaterial3D_nvj36")
+size = Vector3(0.1, 0.1, 0.5)
+
+[node name="Ground_Melee_Basic" type="MeshInstance3D" groups=["Basic", "Enemy", "Ground", "Melee"]]
+mesh = SubResource("SphereMesh_q80tl")
+script = ExtResource("1_utqee")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.02497, 0.2, -0.427854)
+mesh = SubResource("BoxMesh_gy64i")
+skeleton = NodePath("")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.25
+path_height_offset = -0.45
+path_max_distance = 1.01
+avoidance_enabled = true
+radius = 0.25
+neighbor_distance = 5.0
+avoidance_layers = 2
+avoidance_mask = 2
+
+[connection signal="velocity_computed" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_velocity_computed"]
