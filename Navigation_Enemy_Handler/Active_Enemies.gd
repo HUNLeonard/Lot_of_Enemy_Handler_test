@@ -7,18 +7,24 @@ var nav_obsticles := []
 
 var player
 
+var reparented = false
+
 func _physics_process(_delta):
+	#if !reparented: 
+	#	if get_tree().get_root().find_child("Map_01",true,false).find_child("NavigationRegion3D",false,false):
+	#		reparent(get_tree().get_root().find_child("Map_01",true,false).find_child("NavigationRegion3D",false,false),true)
+	#		reparented = true
+	
 	if !player:
 		player = get_tree().get_root().find_child("World",false,false).find_child("Player",false,false)
-	if Engine.get_physics_frames()% 3 == 0:
+	if Engine.get_physics_frames()% 6 == 0:
 		active_enemy_updater()
-	if Engine.get_physics_frames()% 3 == 0:
+	if Engine.get_physics_frames()% 12 == 0:
 		in_position_enemy_updater()
 
 
 func active_enemy_updater():
-	for enemy in active_enemies:
-		if Engine.get_physics_frames()% 6 == 0:
+		for enemy in active_enemies:
 			if enemy.position.distance_squared_to(player.position) < enemy.ATTACK_RANGE*enemy.ATTACK_RANGE:
 				if enemy.can_attack(player):
 					if in_position_enemies.find(enemy) == -1:
@@ -26,29 +32,27 @@ func active_enemy_updater():
 						in_position_enemies.append(enemy)
 					if !enemy.solid:
 						enemy_turn_off(enemy)
-		
-		
-		#var target_location = enemy.global_position + (player.global_position - enemy.global_position)-enemy.personal_eltolas
-		
-		if enemy.nav_agent.target_position == Vector3(0,0,0):
-			enemy.update_target_location(player.global_position)
-		
-		
-		if enemy.nav_agent.target_position != player.global_position:
-			if Engine.get_physics_frames()% 6 == 0:
+			
+			
+			#var target_location = enemy.global_position + (player.global_position - enemy.global_position)-enemy.personal_eltolas
+			
+			if enemy.nav_agent.target_position == Vector3(0,0,0):
 				enemy.update_target_location(player.global_position)
-		
-		
-		if !enemy.nav_agent.is_target_reached() and !enemy.nav_agent.is_navigation_finished() :
-			if Engine.get_physics_frames()% 6 == 0:
+			
+			
+			if enemy.nav_agent.target_position != player.global_position:
+				enemy.update_target_location(player.global_position)
+			
+			
+			if !enemy.nav_agent.is_target_reached() and !enemy.nav_agent.is_navigation_finished() :
 				enemy.update_target_location(player.global_position)
 				moving_enemy(enemy)
-		else:
-			if in_position_enemies.find(enemy) == -1:
-				active_enemies.remove_at(active_enemies.find(enemy))
-				in_position_enemies.append(enemy)
-			if !enemy.solid:
-				enemy_turn_off(enemy)
+			else:
+				if in_position_enemies.find(enemy) == -1:
+					active_enemies.remove_at(active_enemies.find(enemy))
+					in_position_enemies.append(enemy)
+				if !enemy.solid:
+					enemy_turn_off(enemy)
 
 
 func moving_enemy(enemy):
@@ -65,6 +69,8 @@ func enemy_turn_on(enemy):
 			NavigationServer3D.free_rid(array[1])
 			nav_obsticles.remove_at(nav_obsticles.find(array))
 	#enemy.nav_agent.radius = 0.3
+	enemy.in_pos_timer = 0.0
+	enemy.in_pos_complete = false
 	enemy.nav_agent.avoidance_enabled = true
 
 
@@ -87,7 +93,6 @@ func enemy_turn_off(enemy):
 	@warning_ignore("narrowing_conversion")
 	NavigationServer3D.obstacle_set_avoidance_layers(new_obstacle_rid,pow(2,2-1))
 	NavigationServer3D.obstacle_set_avoidance_enabled(new_obstacle_rid, true)
-	NavigationServer3D.set_debug_enabled(true)
 	
 	nav_obsticles.append([enemy,new_obstacle_rid])
 	#enemy.nav_agent.radius = 0.01
@@ -96,12 +101,28 @@ func enemy_turn_off(enemy):
 
 func in_position_enemy_updater():
 	for enemy in in_position_enemies:
-		enemy.nav_agent.set_velocity(Vector3(0,0,0))
+		if !enemy.in_pos_complete:
+			if enemy.in_pos_timer < 0.3:
+				enemy.in_pos_timer += get_physics_process_delta_time()*12
+			else:
+				for array in nav_obsticles:
+					if array.find(enemy) != -1:
+						NavigationServer3D.free_rid(array[1])
+						nav_obsticles.remove_at(nav_obsticles.find(array))
+						enemy.in_pos_complete = true
+			enemy.nav_agent.set_velocity(Vector3(0,0,0))
 		enemy.rotation.y = lerp_angle(enemy.rotation.y, atan2(-enemy.position.direction_to(player.position).x,-enemy.position.direction_to(player.position).z),get_physics_process_delta_time()*10)
-		
-		if enemy.nav_agent.target_position != player.global_position:
-			if in_position_enemies.find(enemy) != -1:
-				in_position_enemies.remove_at(in_position_enemies.find(enemy))
-				active_enemies.append(enemy)
-				if enemy.solid:
-					enemy_turn_on(enemy)
+
+		if enemy.position.distance_squared_to(player.position) < enemy.ATTACK_RANGE*enemy.ATTACK_RANGE:
+			if !enemy.can_attack(player):
+				enemy_pause_release(enemy)
+		else:
+			enemy_pause_release(enemy)
+
+func enemy_pause_release(enemy):
+	if enemy.nav_agent.target_position != player.global_position:
+		if in_position_enemies.find(enemy) != -1:
+			if enemy.solid:
+				enemy_turn_on(enemy)
+			in_position_enemies.remove_at(in_position_enemies.find(enemy))
+			active_enemies.append(enemy)

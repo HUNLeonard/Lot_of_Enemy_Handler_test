@@ -60,30 +60,6 @@ var enemy_pool := []
 
 
 func _ready() -> void:
-	#navigation_mesh = NavigationMesh.new()
-	#region_rid = NavigationServer3D.region_create()
-	
-	#navigation_mesh.cell_size = 0.3
-	#navigation_mesh.cell_height = 0.03
-	
-	#navigation_mesh.agent_height = 1.0
-	#navigation_mesh.agent_radius = 0.5
-	
-	#navigation_mesh.agent_max_climb = 0.12
-	#navigation_mesh.agent_max_slope = 30
-	#navigation_mesh.region_min_size = 100
-	#navigation_mesh.vertices_per_polygon = 3
-	
-	#callback_parsing = on_parsing_done
-	#callback_baking = on_baking_done
-	#region_rid = NavigationServer3D.region_create()
-
-	# Enable the region and set it to the default navigation map.
-	#NavigationServer3D.region_set_enabled(region_rid, true)
-	#NavigationServer3D.region_set_map(region_rid, get_world_3d().get_navigation_map())
-	
-	#parse_source_geometry.call_deferred()
-
 	for spawn in get_children(false):
 		spawns.append(spawn)
 
