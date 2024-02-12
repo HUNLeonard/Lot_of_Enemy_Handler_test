@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4nhx45kkev0f"]
+[gd_scene load_steps=5 format=3 uid="uid://b4nhx45kkev0f"]
 
 [ext_resource type="Script" path="res://Ground_Melee_Basic.gd" id="1_utqee"]
 
@@ -10,10 +10,6 @@ albedo_color = Color(0.403922, 0.403922, 0.403922, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_gy64i"]
 material = SubResource("StandardMaterial3D_nvj36")
 size = Vector3(0.1, 0.1, 0.5)
-
-[sub_resource type="SphereMesh" id="SphereMesh_uq2d2"]
-radius = 0.1
-height = 0.2
 
 [node name="Ground_Melee_Basic" type="MeshInstance3D" groups=["Basic", "Enemy", "Ground", "Melee"]]
 mesh = SubResource("SphereMesh_q80tl")
@@ -34,9 +30,5 @@ radius = 0.25
 neighbor_distance = 5.0
 avoidance_layers = 2
 avoidance_mask = 2
-
-[node name="ball" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("SphereMesh_uq2d2")
 
 [connection signal="velocity_computed" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_velocity_computed"]

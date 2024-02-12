@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 
-const SPEED = 14.0
+var SPEED = 7.0
 const JUMP_VELOCITY = 10.0
 
 const ACC = 0.8
@@ -41,7 +41,12 @@ func _input(event):
 		for i in range(10):
 			get_tree().get_root().find_child("Map_01",true,false).find_child("NavigationRegion3D",false,false).find_child("Spawns",false,false).enemy_spawn()
 	if event.is_action_pressed("ui_text_backspace"):
-		print("backspace")
+		for i in range(10):
+			var maxcount = get_tree().get_root().find_child("AE",false,false).get_child_count(false)
+			if maxcount:
+				var ra = randi_range(0,maxcount-1)
+				if get_tree().get_root().find_child("AE",false,false).get_child(ra,false):
+					get_tree().get_root().find_child("AE",false,false).get_child(ra,false).enemy_delete()
 	if event.is_action_pressed("esc"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE )
 	if event.is_action_pressed("fps_limit"):
@@ -63,8 +68,13 @@ func _physics_process(delta):
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 
+	if Input.is_action_pressed("shift"):
+		SPEED = 24
+	else:
+		SPEED = 7
+
 	# Handle jump.
-	if Input.is_action_pressed("space"):
+	if Input.is_action_pressed("space") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
 	# Get the input direction and handle the movement/deceleration.
